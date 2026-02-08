@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: omniguard-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: omniguard
+      POSTGRES_PASSWORD: omniguard123
+      POSTGRES_DB: omniguard_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

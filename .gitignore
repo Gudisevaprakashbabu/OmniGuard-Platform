@@ -1,10 +1,19 @@
-desktop.ini
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
 venv/
 .env
 
-venv/
-__pycache__/
-.env
+# OS files
+.DS_Store
+desktop.ini
+
+# Node (future dashboard-ui safety)
 node_modules/
+
+# VSCode local settings (optional but recommended)
+.vscode/

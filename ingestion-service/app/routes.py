@@ -8,6 +8,23 @@ import pytz
 
 router = APIRouter()
 
+@router.get("/telemetry")
+def fetch_all_telemetry(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db)
+):
+    records = crud.get_all_telemetry(db, skip, limit)
+    return records
+
+@router.get("/telemetry/{system_id}")
+def fetch_system_telemetry(
+    system_id: str,
+    db: Session = Depends(get_db)
+):
+    records = crud.get_telemetry_by_system(db, system_id)
+    return records
+
 
 @router.post("/telemetry")
 async def receive_telemetry(

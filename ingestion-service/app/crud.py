@@ -4,6 +4,24 @@ from . import db_models
 from .models import TelemetryData
 
 
+# -----------------------------
+# GET ALL TELEMETRY
+# -----------------------------
+def get_all_telemetry(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(db_models.TelemetryRecord).offset(skip).limit(limit).all()
+
+
+# -----------------------------
+# GET TELEMETRY BY SYSTEM ID
+# -----------------------------
+def get_telemetry_by_system(db: Session, system_id: str):
+    return (
+        db.query(db_models.TelemetryRecord)
+        .filter(db_models.TelemetryRecord.system_id == system_id)
+        .all()
+    )
+
+
 def create_telemetry_record(db: Session, telemetry: TelemetryData):
     db_record = db_models.TelemetryRecord(
         system_id=telemetry.system_id,

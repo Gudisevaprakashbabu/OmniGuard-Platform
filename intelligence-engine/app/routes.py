@@ -1,8 +1,18 @@
 from fastapi import APIRouter
-from .services import analyze_system
+import random
 
 router = APIRouter()
 
-@router.get("/analysis/{system_id}")
-def get_analysis(system_id: str):
-    return analyze_system(system_id)
+@router.get("/analysis/{record_id}")
+def analyze_record(record_id: int):
+
+    risk_score = random.randint(1, 100)
+
+    status = "Healthy" if risk_score < 50 else "Risk Detected"
+
+    return {
+        "system_id": record_id,
+        "risk_score": risk_score,
+        "status": status,
+        "message": "Mock analysis result"
+    }

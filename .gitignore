@@ -17,3 +17,5 @@ node_modules/
 
 # VSCode local settings (optional but recommended)
 .vscode/
+
+.env

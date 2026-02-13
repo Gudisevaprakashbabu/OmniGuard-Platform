@@ -4,9 +4,12 @@ from .models import TelemetryData
 from .database import get_db
 from . import crud
 from datetime import timezone
+from .intelligence_client import analyze_telemetry
 import pytz
+from .logger import logger
 
 router = APIRouter()
+
 
 @router.get("/telemetry")
 def fetch_all_telemetry(
@@ -14,16 +17,15 @@ def fetch_all_telemetry(
     limit: int = 100,
     db: Session = Depends(get_db)
 ):
-    records = crud.get_all_telemetry(db, skip, limit)
-    return records
+    return crud.get_all_telemetry(db, skip, limit)
+
 
 @router.get("/telemetry/{system_id}")
 def fetch_system_telemetry(
     system_id: str,
     db: Session = Depends(get_db)
 ):
-    records = crud.get_telemetry_by_system(db, system_id)
-    return records
+    return crud.get_telemetry_by_system(db, system_id)
 
 
 @router.post("/telemetry")
@@ -32,14 +34,12 @@ async def receive_telemetry(
     db: Session = Depends(get_db)
 ):
 
-    # --------------------------
-    # STORE DATA IN DATABASE
-    # --------------------------
+    logger.info(f"Telemetry received from {data.system_id}")
+
+    # Store telemetry
     saved_record = crud.create_telemetry_record(db, data)
 
-    # --------------------------
-    # TIME CONVERSIONS
-    # --------------------------
+    # Time conversion
     utc_time = data.timestamp.astimezone(timezone.utc)
 
     try:
@@ -48,14 +48,18 @@ async def receive_telemetry(
     except Exception:
         client_time = utc_time
 
-    # --------------------------
-    # RESPONSE BACK TO CLIENT
-    # --------------------------
+    # Call intelligence engine safely
+    try:
+        analysis_result = await analyze_telemetry(saved_record.id)
+    except Exception:
+        analysis_result = {"status": "analysis unavailable"}
+
     return {
         "status": "Telemetry stored successfully",
         "record_id": saved_record.id,
-        "system_id": saved_record.system_id,
-        "hostname": saved_record.hostname,
+        "system_id": data.system_id,
+        "hostname": data.hostname,
+        "analysis": analysis_result,
         "utc_timestamp": utc_time.isoformat(),
         "client_timestamp": client_time.isoformat(),
         "client_timezone": data.client_timezone

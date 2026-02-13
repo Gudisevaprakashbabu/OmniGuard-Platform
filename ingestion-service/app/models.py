@@ -19,5 +19,4 @@ class TelemetryData(BaseModel):
 
     client_timezone: Optional[str] = "UTC"
 
-    # Auto UTC timestamp if client does not send one
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

@@ -1,6 +1,11 @@
-class Settings:
-    APP_NAME = "OmniGuard Ingestion Service"
-    VERSION = "1.0.0"
+from pydantic_settings import BaseSettings
 
+class Settings(BaseSettings):
+    DATABASE_URL: str
+    APP_NAME: str = "OmniGuard Ingestion Service"
+    VERSION: str = "1.0.0"
+
+    class Config:
+        env_file = ".env"
 
 settings = Settings()

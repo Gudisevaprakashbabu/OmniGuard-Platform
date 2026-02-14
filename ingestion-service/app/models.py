@@ -1,22 +1,15 @@
-from pydantic import BaseModel, Field
-from datetime import datetime, timezone
-from typing import Optional
+from pydantic import BaseModel
+from datetime import datetime
 
-
-class TelemetryData(BaseModel):
+class TelemetryCreate(BaseModel):
     system_id: str
-    hostname: Optional[str] = None
-    os_version: Optional[str] = None
-    agent_version: Optional[str] = None
-
-    cpu_usage: float = Field(..., ge=0, le=100)
-    memory_usage: float = Field(..., ge=0, le=100)
-    disk_usage: float = Field(..., ge=0, le=100)
-
-    network_usage: Optional[float] = None
-    temperature: Optional[float] = None
-    process_count: Optional[int] = None
-
-    client_timezone: Optional[str] = "UTC"
-
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    hostname: str
+    os_version: str
+    agent_version: str
+    cpu_usage: float
+    memory_usage: float
+    disk_usage: float
+    network_usage: float
+    temperature: float
+    process_count: int
+    timestamp: datetime

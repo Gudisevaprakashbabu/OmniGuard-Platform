@@ -1,11 +1,11 @@
-from pydantic_settings import BaseSettings
+import os
 
-class Settings(BaseSettings):
-    DATABASE_URL: str
-    APP_NAME: str = "OmniGuard Ingestion Service"
-    VERSION: str = "1.0.0"
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://omniguard:omniguard123@localhost:5432/omniguard_db"
+)
 
-    class Config:
-        env_file = ".env"
-
-settings = Settings()
+INTELLIGENCE_ENGINE_URL = os.getenv(
+    "INTELLIGENCE_ENGINE_URL",
+    "http://localhost:8001"
+)

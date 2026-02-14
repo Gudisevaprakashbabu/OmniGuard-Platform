@@ -10,10 +10,35 @@ services:
       POSTGRES_USER: omniguard
       POSTGRES_PASSWORD: omniguard123
       POSTGRES_DB: omniguard_db
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U omniguard -d omniguard_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  ingestion-service:
+    build: ./ingestion-service
+    container_name: omniguard-ingestion
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://omniguard:omniguard123@postgres:5432/omniguard_db
+      INTELLIGENCE_ENGINE_URL: http://intelligence-engine:8001
+    ports:
+      - "8000:8000"
+
+  intelligence-engine:
+    build: ./intelligence-engine
+    container_name: omniguard-intelligence
+    restart: always
+    ports:
+      - "8001:8001"
 
 volumes:
   postgres_data:

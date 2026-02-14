@@ -1,9 +1,12 @@
+import json
 import httpx
 
-INTELLIGENCE_ENGINE_URL = "http://127.0.0.1:8001/analysis"
+from fastapi.encoders import jsonable_encoder
 
-async def analyze_telemetry(record_id: int):
-    async with httpx.AsyncClient(timeout=5.0) as client:
-        response = await client.get(f"{INTELLIGENCE_ENGINE_URL}/{record_id}")
-        response.raise_for_status()
+async def analyze_telemetry(data: dict):
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            "http://intelligence-engine:8001/analyze",
+            json=jsonable_encoder(data)
+        )
         return response.json()

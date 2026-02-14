@@ -1,18 +1,25 @@
 from fastapi import APIRouter
-import random
 
 router = APIRouter()
 
-@router.get("/analysis/{record_id}")
-def analyze_record(record_id: int):
+@router.post("/analyze")
+def analyze(data: dict):
+    risk_score = 0
 
-    risk_score = random.randint(1, 100)
+    if data.get("cpu_usage", 0) > 85:
+        risk_score += 30
 
-    status = "Healthy" if risk_score < 50 else "Risk Detected"
+    if data.get("memory_usage", 0) > 90:
+        risk_score += 30
+
+    if data.get("temperature", 0) > 80:
+        risk_score += 40
 
     return {
-        "system_id": record_id,
         "risk_score": risk_score,
-        "status": status,
-        "message": "Mock analysis result"
+        "risk_level": (
+            "HIGH" if risk_score >= 70 else
+            "MEDIUM" if risk_score >= 40 else
+            "LOW"
+        )
     }
